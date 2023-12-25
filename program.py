@@ -240,10 +240,10 @@ def main(argv):
                 print("NO")
 
         case "DC-CO" :
-            dc_co(all_args,atks,arguments)
+            dc_co(all_args,atks,arguments[0])
 
         case "DS-CO" :
-            ds_co(all_args,atks,arguments)
+            ds_co(all_args,atks,arguments[0])
         
 
         # STABLE
@@ -255,10 +255,10 @@ def main(argv):
                 print("NO")
         
         case "DC-ST" :
-            dc_st(all_args,atks,arguments)
+            dc_st(all_args,atks,arguments[0])
         
         case "DS-ST" :
-            ds_st(all_args,atks,arguments)
+            ds_st(all_args,atks,arguments[0])
 
 
 
