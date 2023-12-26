@@ -173,13 +173,32 @@ def ds_co(args, atks, s) :
 def ve_st(args, atks, s) :
     """
     Return True or False \n\n
-    argset : a list of arguments \n
     args : a list of all arguments | ex : [ 'A' , 'B' ] \n
-    atks : a list of tuples of arguments, representing attacks | ex: [ ('Atk1','Def1') , ('Atk2','Def2') ] \n\n
-    checks if 'argset' is a stable extension of F.
+    atks : a list of tuples of arguments, representing attacks | ex: [ ('Atk1','Def1') , ('Atk2','Def2') ]
+    s : a subset of args
+    checks if 's' is a stable extension of F.
     """
-    ...
+    # is s conflict-free ?
+    if conflict_free(s, atks):
+        # list to sets (for difference operator)
+        setArgs = set(args)
+        setS = set(s)
+        diff = setArgs.difference(s)
 
+        # complement attack check
+        for a in diff:
+            complement = False
+            for b in setS:
+                if (b,a) in atks:
+                    complement = True
+
+            # no complement attack found
+            if not complement:
+                return False
+        # there is a complement attack for each node in args - s
+        return True
+
+    return False
 
 def dc_st(args, atks, s) :
     """
@@ -225,7 +244,7 @@ def main(argv):
 
     # read file
     all_args , atks = read_file(filename)
-
+    arguments = [arg.upper() for arg in arguments.split(',')]
 
     # match problem to corresponding function
 
@@ -233,7 +252,6 @@ def main(argv):
 
         # COMPLETE
         case "VE-CO" :
-            arguments = arguments.split(',')
             if ve_co(all_args , atks , arguments) :
                 print("YES")
             else :
@@ -248,7 +266,6 @@ def main(argv):
 
         # STABLE
         case "VE-ST" :
-            arguments = arguments.split(',')
             if ve_st(all_args , atks , arguments) :
                 print("YES")
             else :
