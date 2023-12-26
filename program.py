@@ -1,4 +1,5 @@
 import sys, getopt
+from itertools import combinations
 
 
 # =======================[ READ FILE ]=======================
@@ -170,12 +171,32 @@ def ds_co(args, atks, s) :
 
 # ====================[ STABLE PROBLEMS ]====================
 
+def sublists(lst):
+    """
+    [ Return a list of lists ] \n\n
+    lst : a list \n\n
+    Returns all possible sublists of the one given in parameter (code from "https://www.w3resource.com/python-exercises/list/python-data-type-list-exercise-33.php")
+    """
+    subs = []  # Create an empty list 'subs' to store the sublists
+
+    # Iterate through the range of numbers from 0 to the length of 'my_list' + 1
+    for i in range(0, len(lst) + 1):
+        # Use the 'combinations' function to generate all combinations of 'my_list' of length 'i'
+        temp = [list(x) for x in combinations(lst, i)]
+
+        # Check if 'temp' contains any elements; if so, extend the 'subs' list with the generated sublists
+        if len(temp) > 0:
+            subs.extend(temp)
+
+    return subs  # Return the list of generated sublists
+
+
 def ve_st(args, atks, s) :
     """
     Return True or False \n\n
     args : a list of all arguments | ex : [ 'A' , 'B' ] \n
-    atks : a list of tuples of arguments, representing attacks | ex: [ ('Atk1','Def1') , ('Atk2','Def2') ]
-    s : a subset of args
+    atks : a list of tuples of arguments, representing attacks | ex: [ ('Atk1','Def1') , ('Atk2','Def2') ] \n
+    s : a subset of args \n\n
     checks if 's' is a stable extension of F.
     """
     # is s conflict-free ?
@@ -208,8 +229,15 @@ def dc_st(args, atks, s) :
     s : an argument within args \n\n
     checks if s belongs to some stable extension of F.
     """
-    ...
-
+    if ve_st(args, atks, s) :
+        return True
+    subs = sublists(args)
+    arg = s[0]
+    for currExt in subs:
+        if arg in currExt:
+            if ve_st(args, atks, currExt):
+                return True
+    return False
 
 def ds_st(args, atks, s) :
     """
@@ -219,7 +247,13 @@ def ds_st(args, atks, s) :
     s : an argument within args \n\n
     checks if s belongs to each stable extension of F.
     """
-    ...
+    subs = sublists(args)
+    arg = s[0]
+    for currExt in subs:
+        if ve_st(args, atks, currExt):
+            if arg not in currExt:
+                return False
+    return True
 
 
 # ==========================[ MAIN ]=========================
@@ -272,10 +306,16 @@ def main(argv):
                 print("NO")
         
         case "DC-ST" :
-            dc_st(all_args,atks,arguments)
+            if dc_st(all_args,atks,arguments) :
+                print("YES")
+            else :
+                print("NO")
         
         case "DS-ST" :
-            ds_st(all_args,atks,arguments)
+            if ds_st(all_args,atks,arguments) :
+                print("YES")
+            else :
+                print("NO")
 
 
 
