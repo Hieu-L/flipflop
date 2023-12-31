@@ -1,12 +1,11 @@
 import sys, getopt
-from itertools import combinations
 
 
 # =======================[ READ FILE ]=======================
 
 def read_file(filename) :
     """ 
-    an paranoid way to read a file \n\n
+    a paranoid way to read a file \n\n
     Returns args , atks \n
     args : a list of all arguments, which are represented as Strings \n
     atks : a list of tuple of arguments, which are represented as Tuples of Strings 
@@ -52,6 +51,27 @@ def read_file(filename) :
                 atks.append( (atk,dfn) )
 
     return args , atks      
+
+# ==========================[ MISC]==========================
+
+import itertools
+
+
+def get_all_subsets(args,n) :
+
+    return list(itertools.combinations(args, n))
+
+
+def get_all_sets(args,atks) :
+    """ get all sets (represented as lists) """
+    l = []
+    for n in range(0,len(args)+1) :
+        candidates = get_all_subsets(args,n) 
+        
+        for c in candidates :
+            l.append(list(c))
+    return l
+
 
 # ==================[ IS ADMISSIBLE CHECK ]==================
 
@@ -146,7 +166,7 @@ def ve_co(args, atks, argset) :
     # if not admissible
     else :
         return False
-
+    
 
 def dc_co(args, atks, s) :
     """
@@ -156,7 +176,14 @@ def dc_co(args, atks, s) :
     s : an argument within args \n\n
     checks if s belongs to some complete extension of F.
     """
-    ...
+    all_sets = get_all_sets(args,atks)
+    for e in all_sets :
+        if ve_co(args,atks,e) :
+            if s in e :
+                print("YES")
+                return True
+    print("NO")
+    return False
 
 
 def ds_co(args, atks, s) :
@@ -167,7 +194,27 @@ def ds_co(args, atks, s) :
     s : an argument within args \n\n
     checks if s belongs to each complete extension of F.
     """
-    ...
+    all_sets = get_all_sets(args,atks)
+
+    has_complete_set = False
+
+    for e in all_sets :    
+    
+        if ve_co(args,atks,e) :
+
+            has_complete_set = True
+            
+            if not (s in e) :
+                print("NO")
+                return False
+    
+    if has_complete_set :
+        print("YES")
+        return True
+    else :
+        print("NO")
+        return True
+
 
 # ====================[ STABLE PROBLEMS ]====================
 
@@ -182,7 +229,7 @@ def sublists(lst):
     # Iterate through the range of numbers from 0 to the length of 'my_list' + 1
     for i in range(0, len(lst) + 1):
         # Use the 'combinations' function to generate all combinations of 'my_list' of length 'i'
-        temp = [list(x) for x in combinations(lst, i)]
+        temp = [list(x) for x in itertools.combinations(lst, i)]
 
         # Check if 'temp' contains any elements; if so, extend the 'subs' list with the generated sublists
         if len(temp) > 0:
@@ -256,6 +303,8 @@ def ds_st(args, atks, s) :
     return True
 
 
+
+
 # ==========================[ MAIN ]=========================
 
 def main(argv):
@@ -278,44 +327,84 @@ def main(argv):
 
     # read file
     all_args , atks = read_file(filename)
-    arguments = [arg.upper() for arg in arguments.split(',')]
+
 
     # match problem to corresponding function
 
     match problem :
 
         # COMPLETE
+
         case "VE-CO" :
-            if ve_co(all_args , atks , arguments) :
+            if len(arguments) == 0 :
                 print("YES")
             else :
-                print("NO")
+                arguments = arguments.split(',')
+                if ve_co(all_args , atks , arguments) :
+                    print("YES")
+                else :
+                    print("NO")
+
 
         case "DC-CO" :
-            dc_co(all_args,atks,arguments)
+            if len(arguments) == 0 :
+                dc_co(all_args,atks,arguments)
+            else :
+                dc_co(all_args,atks,arguments[0])
+
+
 
         case "DS-CO" :
-            ds_co(all_args,atks,arguments)
+            if len(arguments) == 0 :
+                ds_co(all_args,atks,arguments)
+            else :
+                ds_co(all_args,atks,arguments[0])
         
 
+
         # STABLE
+
         case "VE-ST" :
-            if ve_st(all_args , atks , arguments) :
-                print("YES")
-            else :
+            if len(arguments) == 0 :
                 print("NO")
+            else : 
+                arguments = arguments.split(',')
+                if ve_st(all_args , atks , arguments) :
+                    print("YES")
+                else :
+                    print("NO")
         
         case "DC-ST" :
+            if len(arguments) != 0 :
+                arguments = [ arguments ]
+
             if dc_st(all_args,atks,arguments) :
                 print("YES")
             else :
                 print("NO")
         
         case "DS-ST" :
+            if len(arguments) != 0 :
+                arguments = [ arguments ]
+
             if ds_st(all_args,atks,arguments) :
                 print("YES")
             else :
                 print("NO")
+        
+
+        # ERROR
+
+        case other :
+            print("error : invalid problem name")
+    
+
+                
+            
+                
+              
+        
+
 
 
 
